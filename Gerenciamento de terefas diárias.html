@@ -1,0 +1,75 @@
+# Função para carregar tarefas de um arquivo
+def carregar_tarefas():
+    tarefas = []
+    try:
+        with open("tarefas.txt", "r") as arquivo:
+            for linha in arquivo:
+                nome, status = linha.strip().split("|")
+                tarefas.append({"nome": nome, "concluida": status == "True"})
+    except FileNotFoundError:
+        pass  # Se o arquivo não existir, começamos com lista vazia
+    return tarefas
+
+# Função para salvar tarefas no arquivo
+def salvar_tarefas(tarefas):
+    with open("tarefas.txt", "w") as arquivo:
+        for tarefa in tarefas:
+            linha = f"{tarefa['nome']}|{tarefa['concluida']}\n"
+            arquivo.write(linha)
+
+# Função para adicionar uma nova tarefa
+def adicionar_tarefa(tarefas):
+    nome = input("Digite o nome da tarefa: ")
+    tarefas.append({"nome": nome, "concluida": False})
+    print("Tarefa adicionada com sucesso!")
+
+# Função para listar todas as tarefas
+def listar_tarefas(tarefas):
+    if not tarefas:
+        print("Nenhuma tarefa encontrada.")
+    else:
+        print("\n--- Lista de Tarefas ---")
+        for i, tarefa in enumerate(tarefas):
+            status = "✔️" if tarefa["concluida"] else "❌"
+            print(f"{i + 1}. {tarefa['nome']} - {status}")
+
+# Função para marcar tarefa como concluída
+def concluir_tarefa(tarefas):
+    listar_tarefas(tarefas)
+    try:
+        indice = int(input("Digite o número da tarefa concluída: ")) - 1
+        if 0 <= indice < len(tarefas):
+            tarefas[indice]["concluida"] = True
+            print("Tarefa marcada como concluída!")
+        else:
+            print("Número inválido.")
+    except ValueError:
+        print("Entrada inválida. Digite um número.")
+
+# Função principal (menu)
+def menu():
+    tarefas = carregar_tarefas()
+    while True:
+        print("\n==== GERENCIADOR DE HÁBITOS ====")
+        print("1. Adicionar tarefa")
+        print("2. Listar tarefas")
+        print("3. Marcar tarefa como concluída")
+        print("4. Sair")
+
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            adicionar_tarefa(tarefas)
+        elif opcao == "2":
+            listar_tarefas(tarefas)
+        elif opcao == "3":
+            concluir_tarefa(tarefas)
+        elif opcao == "4":
+            salvar_tarefas(tarefas)
+            print("Saindo... Tarefas salvas com sucesso.")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+# Executar o programa
+menu()
